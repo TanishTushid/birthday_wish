@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Make a Wish! 🎂</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #0d0015;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .bg {
+    position: fixed; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse at 50% 80%, #2d0050 0%, #0d0015 70%);
+  }
+
+  #starCvs { position:fixed; inset:0; z-index:0; pointer-events:none; }
+
+  .top-label {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding-top: 32px;
+    animation: fadeUp .8s ease both;
+  }
+  .top-label h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    background: linear-gradient(90deg, #ff6b9d, #ffd700, #ff9f43);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+  }
+  .top-label p {
+    color: rgba(255,255,255,.5);
+    font-style: italic;
+    margin-top: 4px;
+  }
+  @keyframes shimmer { from{background-position:0%} to{background-position:200%} }
+  @keyframes fadeUp {
+    from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)}
+  }
+
+  .cake-scene {
+    position: relative; z-index: 10;
+    display: flex; flex-direction:column; align-items:center;
+    margin: 12px 0 0;
+  }
+
+  .candles {
+    display: flex; gap: 14px;
+    align-items: flex-end;
+    margin-bottom: -2px;
+    position: relative; z-index: 3;
+  }
+
+  .candle-wrap { display:flex; flex-direction:column; align-items:center; }
+
+  .flame {
+    width: 16px; height: 24px;
+    background: radial-gradient(ellipse at 50% 80%, #fff 0%, #ffd700 30%, #ff6600 65%, transparent 100%);
+    border-radius: 50% 50% 30% 30%;
+    animation: flicker .18s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 8px #ff9900) drop-shadow(0 0 18px #ffcc00);
+    transform-origin: bottom center;
+    transition: opacity .5s;
+  }
+  .flame.blown { opacity:0; animation:none; }
+  @keyframes flicker {
+    from { transform: scaleX(1) scaleY(1) rotate(-2deg); }
+    to   { transform: scaleX(.85) scaleY(1.08) rotate(2deg); }
+  }
+
+  .candle-body {
+    width: 14px; height: 34px;
+    border-radius: 4px 4px 2px 2px;
+    position: relative;
+    overflow: hidden;
+  }
+  .candle-body::after {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,.15) 0px, rgba(255,255,255,.15) 3px,
+      transparent 3px, transparent 6px
+    );
+  }
+  .c1 .candle-body { background: linear-gradient(135deg, #ff6b9d, #c0005f); }
+  .c2 .candle-body { background: linear-gradient(135deg, #ffd700, #e08c00); }
+  .c3 .candle-body { background: linear-gradient(135deg, #7ec8e3, #0070a8); }
+  .c4 .candle-body { background: linear-gradient(135deg, #98fb98, #228B22); }
+  .c5 .candle-body { background: linear-gradient(135deg, #dda0dd, #800080); }
+
+  .tier {
+    border-radius: 12px;
+    position: relative;
+    display: flex; align-items:center; justify-content:center;
+    overflow: hidden;
+  }
+  .tier::before {
+    content:''; position:absolute; inset:0;
+    background: repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,.06) 0px, rgba(255,255,255,.06) 1px,
+      transparent 1px, transparent 28px
+    );
+  }
+  .tier-top {
+    width: 180px; height: 60px;
+    background: linear-gradient(135deg, #ff9de2 0%, #ff6bbb 40%, #e91e8c 100%);
+    box-shadow: 0 8px 24px rgba(233,30,140,.5), inset 0 2px 0 rgba(255,255,255,.3);
+  }
+  .tier-mid {
+    width: 240px; height: 70px;
+    background: linear-gradient(135deg, #ffe082 0%, #ffb300 40%, #e65100 100%);
+    box-shadow: 0 8px 24px rgba(255,179,0,.4), inset 0 2px 0 rgba(255,255,255,.25);
+  }
+  .tier-bot {
+    width: 300px; height: 80px;
+    background: linear-gradient(135deg, #ce93d8 0%, #ab47bc 40%, #6a1b9a 100%);
+    box-shadow: 0 12px 32px rgba(106,27,154,.5), inset 0 2px 0 rgba(255,255,255,.2);
+  }
+  .drip {
+    position: absolute; top: -1px; left: 0; right: 0;
+    height: 14px;
+    background: rgba(255,255,255,.85);
+    border-radius: 0 0 60% 60%;
+    clip-path: polygon(
+      0% 0%, 6% 100%, 10% 0%, 16% 100%, 20% 0%,
+      26% 100%, 30% 0%, 36% 100%, 40% 0%,
+      46% 100%, 50% 0%, 56% 100%, 60% 0%,
+      66% 100%, 70% 0%, 76% 100%, 80% 0%,
+      86% 100%, 90% 0%, 96% 100%, 100% 0%
+    );
+  }
+  .sprinkle {
+    position:absolute; width:6px; height:3px; border-radius:2px; opacity:.9;
+  }
+  .plate {
+    width: 340px; height: 20px;
+    background: linear-gradient(to bottom, #e8d5ff, #c9a8e8);
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(0,0,0,.4);
+    margin-top: -4px;
+  }
+  .cake-glow {
+    width: 280px; height: 40px;
+    background: radial-gradient(ellipse, rgba(233,30,140,.4) 0%, transparent 70%);
+    margin-top: -10px;
+    filter: blur(12px);
+    animation: glowPulse 2s ease-in-out infinite;
+  }
+  @keyframes glowPulse {0%,100%{opacity:.5;} 50%{opacity:1;} }
+
+  .blow-section {
+    position: relative; z-index: 10;
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeUp .8s 1s ease both;
+    opacity: 0;
+  }
+  .blow-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 14px rgba(255,215,0,.6);
+  }
+  .blow-instruction {
+    color: rgba(255,255,255,.55);
+    font-style:italic;
+    font-size: .95rem;
+    margin-bottom: 14px;
+  }
+
+  .blow-btn {
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #ff4e7e, #ff9f43);
+    border: none; border-radius: 50px;
+    color: #fff;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255,78,126,.5);
+    transition: transform .2s, box-shadow .2s;
+    animation: btnPop .5s 2s ease both;
+    opacity: 0;
+  }
+  .blow-btn:hover { transform:scale(1.05); box-shadow: 0 0 40px rgba(255,78,126,.7); }
+  .blow-btn:disabled { opacity:.4; cursor:default; transform:none; }
+  @keyframes btnPop {
+    from{opacity:0;transform:scale(.8)} to{opacity:1;transform:scale(1)}
+  }
+
+  .wish-msg {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #ffd700;
+    opacity: 0;
+    transition: opacity .8s;
+    margin-top: 6px;
+  }
+  .wish-msg.show { opacity: 1; }
+
+  .next-btn {
+    display: inline-block; margin-top: 22px;
+    padding: 16px 44px;
+    background: linear-gradient(135deg, #7b2ff7, #f107a3);
+    background-size: 200% auto;
+    border: none; border-radius: 60px;
+    color: #fff;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer; text-decoration: none;
+    box-shadow: 0 0 30px rgba(123,47,247,.5);
+    opacity: 0; pointer-events: none;
+    transition: opacity .5s, transform .2s;
+  }
+  .next-btn.show { opacity:1; pointer-events:auto; }
+  .next-btn:hover { transform:translateY(-3px) scale(1.04); }
+
+  .cake-scene { animation: cakeFloat 3s ease-in-out infinite; }
+  @keyframes cakeFloat {
+    0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}
+  }
+
+  /* Mic level indicator */
+  .mic-bar {
+    width: 180px; height: 6px;
+    background: rgba(255,255,255,.1);
+    border-radius: 3px;
+    margin: 10px auto 0;
+    overflow: hidden;
+  }
+  .mic-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #7b2ff7, #ff4e7e);
+    border-radius: 3px;
+    transition: width .1s;
+  }
+  .mic-label {
+    font-size: .78rem;
+    color: rgba(255,255,255,.35);
+    margin-top: 4px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<canvas id="starCvs"></canvas>
+
+<div class="top-label">
+  <h1>🎂 Magical Cake Time! 🎂</h1>
+  <p>Close your eyes… make a wish… then blow!</p>
+</div>
+
+<div class="cake-scene">
+  <div class="candles">
+    <div class="candle-wrap c1">
+      <div class="flame" id="f1"></div>
+      <div class="candle-body"></div>
+    </div>
+    <div class="candle-wrap c2">
+      <div class="flame" id="f2"></div>
+      <div class="candle-body"></div>
+    </div>
+    <div class="candle-wrap c3" style="transform:translateY(-6px)">
+      <div class="flame" id="f3"></div>
+      <div class="candle-body"></div>
+    </div>
+    <div class="candle-wrap c4">
+      <div class="flame" id="f4"></div>
+      <div class="candle-body"></div>
+    </div>
+    <div class="candle-wrap c5">
+      <div class="flame" id="f5"></div>
+      <div class="candle-body"></div>
+    </div>
+  </div>
+
+  <div class="tier tier-top">
+    <div class="drip"></div>
+    <span style="font-size:1.4rem;z-index:2">🌸🌹🌸</span>
+    <div class="sprinkle" style="background:#ff6b9d;top:20px;left:20px;transform:rotate(30deg)"></div>
+    <div class="sprinkle" style="background:#ffd700;top:30px;left:50px;transform:rotate(-20deg)"></div>
+    <div class="sprinkle" style="background:#7ec8e3;top:15px;right:20px;transform:rotate(45deg)"></div>
+  </div>
+
+  <div class="tier tier-mid">
+    <div class="drip"></div>
+    <span style="font-size:1.2rem;z-index:2;letter-spacing:8px">✨💫✨💫✨</span>
+    <div class="sprinkle" style="background:#fff;top:25px;left:30px;transform:rotate(60deg)"></div>
+    <div class="sprinkle" style="background:#ff6b35;top:40px;left:80px;transform:rotate(-10deg)"></div>
+    <div class="sprinkle" style="background:#98fb98;top:20px;right:40px;transform:rotate(80deg)"></div>
+    <div class="sprinkle" style="background:#ff6b9d;bottom:18px;right:70px;transform:rotate(20deg)"></div>
+  </div>
+
+  <div class="tier tier-bot">
+    <div class="drip"></div>
+    <span style="font-size:1.5rem;z-index:2;letter-spacing:6px">🎀💜🎀💜🎀</span>
+    <div class="sprinkle" style="background:#ffd700;top:20px;left:20px;transform:rotate(30deg)"></div>
+    <div class="sprinkle" style="background:#fff;top:40px;left:70px;transform:rotate(-30deg)"></div>
+    <div class="sprinkle" style="background:#ff6b9d;bottom:15px;left:40px;transform:rotate(50deg)"></div>
+    <div class="sprinkle" style="background:#7ec8e3;bottom:20px;right:50px;transform:rotate(-50deg)"></div>
+    <div class="sprinkle" style="background:#ff6b35;top:30px;right:30px;transform:rotate(10deg)"></div>
+  </div>
+
+  <div class="plate"></div>
+  <div class="cake-glow"></div>
+</div>
+
+<div class="blow-section">
+  <p class="blow-title">🕯️ Make a Secret Wish 🕯️</p>
+  <p class="blow-instruction">Hold your breath… think of your wish… then blow into the mic!</p>
+  <div class="mic-bar"><div class="mic-fill" id="micFill"></div></div>
+  <p class="mic-label" id="micLabel">🎤 Listening for your breath…</p>
+  <br>
+  <p class="wish-msg" id="wishMsg">Your wish has been sent to the stars! 🌟</p>
+  <br>
+  <button class="blow-btn" id="blowBtn" onclick="triggerBlow()">
+    💨 Blow the Candles! 💨
+  </button>
+  <br>
+  <a href="/fireworks" class="next-btn" id="nextBtn">
+    🎉 Now Celebrate! 🎉
+  </a>
+</div>
+
+<script>
+/* ── Stars ── */
+const cvs = document.getElementById('starCvs');
+const ctx = cvs.getContext('2d');
+let stars = [];
+function resize() {
+  cvs.width = window.innerWidth; cvs.height = window.innerHeight;
+  stars = Array.from({length:180}, () => ({
+    x: Math.random() * cvs.width,
+    y: Math.random() * cvs.height,
+    r: Math.random() * 1.2 + .3,
+    phase: Math.random() * Math.PI * 2,
+    speed: Math.random() * .006 + .003
+  }));
+}
+function drawStars(t) {
+  ctx.clearRect(0, 0, cvs.width, cvs.height);
+  stars.forEach(s => {
+    const a = .2 + .7 * (0.5 + 0.5 * Math.sin(t * s.speed * 60 + s.phase));
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(255,240,220,${a})`; ctx.fill();
+  });
+  requestAnimationFrame(drawStars);
+}
+window.addEventListener('resize', resize);
+resize();
+requestAnimationFrame(drawStars);
+
+/* ── Blow Logic ── */
+const flames   = [1,2,3,4,5].map(i => document.getElementById('f' + i));
+const wishEl   = document.getElementById('wishMsg');
+const nextBtn  = document.getElementById('nextBtn');
+const blowBtn  = document.getElementById('blowBtn');
+const micFill  = document.getElementById('micFill');
+const micLabel = document.getElementById('micLabel');
+
+let blowing = false;   // has the blow sequence started?
+let blown   = false;   // have candles already been extinguished?
+
+/* Core: extinguish candles, then reveal next button after 2 s */
+function triggerBlow() {
+  if (blown) return;
+  blown = true;
+
+  // Disable manual button
+  blowBtn.disabled = true;
+
+  // Blow out all candles immediately
+  flames.forEach(f => f.classList.add('blown'));
+
+  // Show wish message
+  setTimeout(() => {
+    wishEl.classList.add('show');
+  }, 400);
+
+  // Show Next button after 2 seconds
+  setTimeout(() => {
+    nextBtn.classList.add('show');
+  }, 2000);
+}
+
+/* ── Microphone Detection ── */
+async function initMic() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const analyser = audioContext.createAnalyser();
+    const microphone = audioContext.createMediaStreamSource(stream);
+
+    analyser.fftSize = 256;
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    microphone.connect(analyser);
+
+    micLabel.textContent = '🎤 Listening for your breath…';
+
+    // Rolling average to avoid one-frame spikes
+    let smoothVolume = 0;
+
+    function detect() {
+      analyser.getByteFrequencyData(dataArray);
+      const raw = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+      smoothVolume = smoothVolume * 0.8 + raw * 0.2;  // smooth
+
+      // Update mic bar UI (0–100 mapped to 0–100%)
+      const pct = Math.min(100, smoothVolume * 2);
+      micFill.style.width = pct + '%';
+
+      // Trigger blow if volume crosses threshold (30 is a solid blow)
+      if (smoothVolume > 30 && !blown) {
+        triggerBlow();
+      }
+
+      requestAnimationFrame(detect);
+    }
+
+    detect();
+  } catch (err) {
+    // Mic not available — just show the manual button prominently
+    micLabel.textContent = '🎤 No mic? Use the button below!';
+    console.warn('Mic access denied or unavailable:', err);
+  }
+}
+
+initMic();
+</script>
+</body>
+</html>

@@ -1,0 +1,404 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    min-height: 100vh;
+    background: #0d0015;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    overflow: hidden;
+    flex-direction: column;
+    gap: 0;
+}
+
+.bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: radial-gradient(ellipse at 50% 80%, #2d0050 0%, #0d0015 70%);
+}
+
+#starCvs {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.top-label {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding-top: 32px;
+    animation: fadeUp .8s ease both;
+}
+
+.top-label h1 {
+    font-family: 'Dancing Script', cursive;
+    font-size: clamp(2rem, 6vw, 3.5rem);
+    background: linear-gradient(90deg, #ff6b9d, #ffd700, #ff9f43);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% auto;
+    animation: shimmer 3s linear infinite;
+}
+
+.top-label p {
+    color: rgba(255, 255, 255, .5);
+    font-style: italic;
+    margin-top: 4px;
+}
+
+@keyframes shimmer {
+    from {
+        background-position: 0%
+    }
+
+    to {
+        background-position: 200%
+    }
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px)
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0)
+    }
+}
+
+.cake-scene {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 12px 0 0;
+}
+
+.candles {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    margin-bottom: -2px;
+    position: relative;
+    z-index: 3;
+}
+
+.candle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.flame {
+    width: 16px;
+    height: 24px;
+    background: radial-gradient(ellipse at 50% 80%, #fff 0%, #ffd700 30%, #ff6600 65%, transparent 100%);
+    border-radius: 50% 50% 30% 30%;
+    animation: flicker .18s ease-in-out infinite alternate;
+    filter: drop-shadow(0 0 8px #ff9900) drop-shadow(0 0 18px #ffcc00);
+    transform-origin: bottom center;
+    transition: opacity .5s;
+}
+
+.flame.blown {
+    opacity: 0;
+    animation: none;
+}
+
+@keyframes flicker {
+    from {
+        transform: scaleX(1) scaleY(1) rotate(-2deg);
+    }
+
+    to {
+        transform: scaleX(.85) scaleY(1.08) rotate(2deg);
+    }
+}
+
+.candle-body {
+    width: 14px;
+    height: 34px;
+    border-radius: 4px 4px 2px 2px;
+    position: relative;
+    overflow: hidden;
+}
+
+.candle-body::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(to bottom,
+            rgba(255, 255, 255, .15) 0px, rgba(255, 255, 255, .15) 3px,
+            transparent 3px, transparent 6px);
+}
+
+.c1 .candle-body {
+    background: linear-gradient(135deg, #ff6b9d, #c0005f);
+}
+
+.c2 .candle-body {
+    background: linear-gradient(135deg, #ffd700, #e08c00);
+}
+
+.c3 .candle-body {
+    background: linear-gradient(135deg, #7ec8e3, #0070a8);
+}
+
+.c4 .candle-body {
+    background: linear-gradient(135deg, #98fb98, #228B22);
+}
+
+.c5 .candle-body {
+    background: linear-gradient(135deg, #dda0dd, #800080);
+}
+
+.tier {
+    border-radius: 12px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.tier::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg,
+            rgba(255, 255, 255, .06) 0px, rgba(255, 255, 255, .06) 1px,
+            transparent 1px, transparent 28px);
+}
+
+.tier-top {
+    width: 180px;
+    height: 60px;
+    background: linear-gradient(135deg, #ff9de2 0%, #ff6bbb 40%, #e91e8c 100%);
+    box-shadow: 0 8px 24px rgba(233, 30, 140, .5), inset 0 2px 0 rgba(255, 255, 255, .3);
+}
+
+.tier-mid {
+    width: 240px;
+    height: 70px;
+    background: linear-gradient(135deg, #ffe082 0%, #ffb300 40%, #e65100 100%);
+    box-shadow: 0 8px 24px rgba(255, 179, 0, .4), inset 0 2px 0 rgba(255, 255, 255, .25);
+}
+
+.tier-bot {
+    width: 300px;
+    height: 80px;
+    background: linear-gradient(135deg, #ce93d8 0%, #ab47bc 40%, #6a1b9a 100%);
+    box-shadow: 0 12px 32px rgba(106, 27, 154, .5), inset 0 2px 0 rgba(255, 255, 255, .2);
+}
+
+.drip {
+    position: absolute;
+    top: -1px;
+    left: 0;
+    right: 0;
+    height: 14px;
+    background: rgba(255, 255, 255, .85);
+    border-radius: 0 0 60% 60%;
+    clip-path: polygon(0% 0%, 6% 100%, 10% 0%, 16% 100%, 20% 0%,
+            26% 100%, 30% 0%, 36% 100%, 40% 0%,
+            46% 100%, 50% 0%, 56% 100%, 60% 0%,
+            66% 100%, 70% 0%, 76% 100%, 80% 0%,
+            86% 100%, 90% 0%, 96% 100%, 100% 0%);
+}
+
+.sprinkle {
+    position: absolute;
+    width: 6px;
+    height: 3px;
+    border-radius: 2px;
+    opacity: .9;
+}
+
+.plate {
+    width: 340px;
+    height: 20px;
+    background: linear-gradient(to bottom, #e8d5ff, #c9a8e8);
+    border-radius: 50%;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .4);
+    margin-top: -4px;
+}
+
+.cake-glow {
+    width: 280px;
+    height: 40px;
+    background: radial-gradient(ellipse, rgba(233, 30, 140, .4) 0%, transparent 70%);
+    margin-top: -10px;
+    filter: blur(12px);
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+@keyframes glowPulse {
+
+    0%,
+    100% {
+        opacity: .5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.blow-section {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    margin-top: 20px;
+    animation: fadeUp .8s 1s ease both;
+    opacity: 0;
+}
+
+.blow-title {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #ffd700;
+    margin-bottom: 10px;
+    text-shadow: 0 0 14px rgba(255, 215, 0, .6);
+}
+
+.blow-instruction {
+    color: rgba(255, 255, 255, .55);
+    font-style: italic;
+    font-size: .95rem;
+    margin-bottom: 14px;
+}
+
+.blow-btn {
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #ff4e7e, #ff9f43);
+    border: none;
+    border-radius: 50px;
+    color: #fff;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(255, 78, 126, .5);
+    transition: transform .2s, box-shadow .2s;
+    animation: btnPop .5s 2s ease both;
+    opacity: 0;
+}
+
+.blow-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 40px rgba(255, 78, 126, .7);
+}
+
+.blow-btn:disabled {
+    opacity: .4;
+    cursor: default;
+    transform: none;
+}
+
+@keyframes btnPop {
+    from {
+        opacity: 0;
+        transform: scale(.8)
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1)
+    }
+}
+
+.wish-msg {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.5rem;
+    color: #ffd700;
+    opacity: 0;
+    transition: opacity .8s;
+    margin-top: 6px;
+}
+
+.wish-msg.show {
+    opacity: 1;
+}
+
+.next-btn {
+    display: inline-block;
+    margin-top: 22px;
+    padding: 16px 44px;
+    background: linear-gradient(135deg, #7b2ff7, #f107a3);
+    background-size: 200% auto;
+    border: none;
+    border-radius: 60px;
+    color: #fff;
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.3rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 0 30px rgba(123, 47, 247, .5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .5s, transform .2s;
+}
+
+.next-btn.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.next-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+}
+
+.cake-scene {
+    animation: cakeFloat 3s ease-in-out infinite;
+}
+
+@keyframes cakeFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+/* Mic level indicator */
+.mic-bar {
+    width: 180px;
+    height: 6px;
+    background: rgba(255, 255, 255, .1);
+    border-radius: 3px;
+    margin: 10px auto 0;
+    overflow: hidden;
+}
+
+.mic-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #7b2ff7, #ff4e7e);
+    border-radius: 3px;
+    transition: width .1s;
+}
+
+.mic-label {
+    font-size: .78rem;
+    color: rgba(255, 255, 255, .35);
+    margin-top: 4px;
+    font-style: italic;
+}

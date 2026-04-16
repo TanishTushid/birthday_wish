@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday!! 🎉</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='fireworks.css') }}">
+</head>
+<body>
+<canvas id="fireCvs"></canvas>
+
+<!-- Confetti -->
+<div id="confettiWrap"></div>
+
+<div class="content">
+  <span class="hb-line1 hb-text">Happy Birthday</span>
+  <span class="name-text" id="nameText">🎀 Dear jiji 🎀</span>
+  <div class="emoji-row">🎉🎊🎁🎈🎂🌟🎉🎊🎁</div>
+  <p class="subtitle">
+    Today the whole universe is celebrating you.<br>
+    You deserve every star in the sky! 🌙✨
+  </p>
+  <span class="hb-line2 hb-text" style="font-size:clamp(2rem,5vw,4rem);display:block;margin-bottom:28px">
+    You Are So Loved! 💖
+  </span>
+  <a href="/letter" class="next-btn">💌 Read Your Letter 💌</a>
+</div>
+
+<script>
+/* ═══ Fireworks Canvas ═══ */
+const cvs = document.getElementById('fireCvs');
+const ctx = cvs.getContext('2d');
+
+cvs.width  = window.innerWidth;
+cvs.height = window.innerHeight;
+window.addEventListener('resize', ()=>{
+  cvs.width  = window.innerWidth;
+  cvs.height = window.innerHeight;
+});
+
+const COLORS = [
+  '#ff6b9d','#ffd700','#ff9f43','#a78bfa',
+  '#60efff','#ff4e7e','#00ffcc','#ff6b35',
+  '#c084fc','#fb923c','#f472b6','#34d399'
+];
+
+class Particle {
+  constructor(x, y, color) {
+    this.x = x; this.y = y;
+    this.color = color;
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 7 + 2;
+    this.vx = Math.cos(angle) * speed;
+    this.vy = Math.sin(angle) * speed;
+    this.alpha = 1;
+    this.decay = Math.random() * .018 + .012;
+    this.radius = Math.random() * 3 + 1;
+    this.gravity = .08;
+    this.trail = [];
+  }
+  update() {
+    this.trail.push({x:this.x, y:this.y, a:this.alpha});
+    if (this.trail.length > 6) this.trail.shift();
+    this.vy += this.gravity;
+    this.x  += this.vx;
+    this.y  += this.vy;
+    this.vx *= .98;
+    this.vy *= .98;
+    this.alpha -= this.decay;
+  }
+  draw() {
+    this.trail.forEach((t,i)=>{
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, this.radius*(i/this.trail.length), 0, Math.PI*2);
+      ctx.fillStyle = this.color.replace(')',`,${t.a*(i/this.trail.length)*0.5})`).replace('rgb','rgba');
+      ctx.fill();
+    });
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    ctx.globalAlpha = this.alpha;
+    ctx.fillStyle = this.color;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+class Rocket {
+  constructor() {
+    this.x = Math.random() * cvs.width * .8 + cvs.width * .1;
+    this.y = cvs.height;
+    const targetY = Math.random() * cvs.height * .5 + cvs.height * .05;
+    this.vy = -(cvs.height - targetY) / 45;
+    this.vx = (Math.random() - .5) * 1.5;
+    this.color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    this.trail = [];
+    this.exploded = false;
+    this.age = 0;
+    this.maxAge = Math.abs((cvs.height - targetY) / Math.abs(this.vy));
+  }
+  update() {
+    this.trail.push({x:this.x, y:this.y});
+    if (this.trail.length > 12) this.trail.shift();
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += .04;
+    this.age++;
+    if (this.age >= this.maxAge || this.vy >= 0) this.exploded = true;
+  }
+  draw() {
+    this.trail.forEach((t,i)=>{
+      ctx.beginPath();
+      ctx.arc(t.x, t.y, 2*(i/this.trail.length), 0, Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = (i/this.trail.length)*.6;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+    ctx.fillStyle = '#fff';
+    ctx.fill();
+  }
+  explode() {
+    const count = Math.floor(Math.random()*60+80);
+    const col = this.color;
+    const secondColor = COLORS[Math.floor(Math.random()*COLORS.length)];
+    return Array.from({length:count}, (_,i)=>
+      new Particle(this.x, this.y, i%3===0 ? secondColor : col)
+    );
+  }
+}
+
+let rockets = [];
+let particles = [];
+
+function launchRocket() {
+  rockets.push(new Rocket());
+}
+
+// Launch every .8-1.5s
+setInterval(launchRocket, 900);
+setTimeout(launchRocket, 100);
+setTimeout(launchRocket, 400);
+
+function animate() {
+  ctx.fillStyle = 'rgba(5,0,18,.18)';
+  ctx.fillRect(0,0,cvs.width,cvs.height);
+
+  // Rockets
+  for (let i = rockets.length-1; i>=0; i--) {
+    rockets[i].update();
+    rockets[i].draw();
+    if (rockets[i].exploded) {
+      particles.push(...rockets[i].explode());
+      rockets.splice(i,1);
+    }
+  }
+
+  // Particles
+  for (let i = particles.length-1; i>=0; i--) {
+    particles[i].update();
+    particles[i].draw();
+    if (particles[i].alpha <= 0) particles.splice(i,1);
+  }
+
+  requestAnimationFrame(animate);
+}
+animate();
+
+/* ═══ Confetti ═══ */
+const wrap = document.getElementById('confettiWrap');
+const confColors = ['#ff6b9d','#ffd700','#60efff','#a78bfa','#ff9f43','#98fb98','#fff'];
+for (let i=0; i<60; i++) {
+  const el = document.createElement('div');
+  el.className = 'confetti-piece';
+  el.style.left = Math.random()*100+'%';
+  el.style.background = confColors[i%confColors.length];
+  el.style.animationDuration = (Math.random()*5+4)+'s';
+  el.style.animationDelay   = (Math.random()*6)+'s';
+  el.style.transform = `rotate(${Math.random()*360}deg)`;
+  el.style.width = (Math.random()*8+6)+'px';
+  el.style.height = (Math.random()*10+8)+'px';
+  wrap.appendChild(el);
+}
+
+/* Set name */
+const nameEl = document.getElementById('nameText');
+// name is injected via Flask template variable below
+nameEl.textContent = '🎀 {{ name }} 🎀';
+</script>
+</body>
+</html>
