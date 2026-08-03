@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Booth 🎞️</title>
+<link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='photos.css') }}">
+</head>
+<body>
+
+<!-- Doodle Stars (Matching reference image) -->
+<div class="doodle-stars" aria-hidden="true">
+  <!-- Large 5-point star left -->
+  <svg class="star star-left" viewBox="0 0 24 24">
+    <path d="M12 2l2.7 6 6.5 0.5-5 4.3 1.5 6.4-5.7-3.6-5.7 3.6 1.5-6.4-5-4.3 6.5-0.5z" fill="none" stroke="#1c2d42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <!-- Medium 5-point star right -->
+  <svg class="star star-right" viewBox="0 0 24 24">
+    <path d="M12 2l2.5 5.5 6 .5-4.5 4 1.3 6-5.3-3.3-5.3 3.3 1.3-6-4.5-4 6-.5z" fill="none" stroke="#1c2d42" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <!-- Small 4-point stars -->
+  <svg class="star star-s1" viewBox="0 0 24 24">
+    <path d="M12 5v14M5 12h14" fill="none" stroke="#1c2d42" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+  <svg class="star star-s2" viewBox="0 0 24 24">
+    <path d="M12 6v12M6 12h12" fill="none" stroke="#1c2d42" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+  <svg class="star star-s3" viewBox="0 0 24 24">
+    <path d="M12 6v12M6 12h12" fill="none" stroke="#1c2d42" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+</div>
+
+<!-- Page title -->
+<div class="page-top">
+  <p class="page-eyebrow">Baji cute-cute pictures</p>
+  <h1 class="page-heading">Meri shakal ke rare screenshots 💀</h1>
+</div>
+
+<!-- ══ PHOTO BOOTH MACHINE ══ -->
+<div class="booth-wrap">
+
+  <!-- The dispenser slot plate from the reference image -->
+  <div class="printer-slot-plate">
+    <div class="printer-slot-opening"></div>
+  </div>
+
+  <!-- Photo strip coming out of the machine -->
+  <div class="strip" id="strip">
+    {% set photo_list = [] %}
+    {% for img in images %}{% if not img.endswith('.mp4') %}{% set _ = photo_list.append(img) %}{% endif %}{% endfor %}
+
+    {% for photo in photo_list %}
+    <div class="strip-photo" style="--i:{{ loop.index0 }}">
+      <div class="photo-frame">
+        <img src="{{ url_for('serve_photo', filename=photo) }}" alt="Memory {{ loop.index }}" loading="lazy" onclick="openLightbox({{ loop.index0 }})">
+      </div>
+      {% if loop.last %}
+      <div class="strip-bottom-label">💕 Our Memories</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<!-- ══ FOOTER MESSAGE ══ -->
+<div class="footer-msg">
+  <p class="footer-quote">"Every picture tells a story — ours is my favourite 🌸"</p>
+  <div class="footer-btns">
+    <a href="/fireworks" class="f-btn">🎉 Celebrate!</a>
+    <a href="/letter" class="f-btn f-btn2">💌 Read the Letter</a>
+    <a href="/cake" class="f-btn f-btn3">🎂 Cut the Cake</a>
+  </div>
+</div>
+
+<!-- ══ LIGHTBOX ══ -->
+<div class="lightbox" id="lightbox" onclick="closeLightboxOnBg(event)">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <button class="lb-nav lb-prev" onclick="prevPhoto(event)">❮</button>
+  <button class="lb-nav lb-next" onclick="nextPhoto(event)">❯</button>
+  <div class="lb-inner">
+    <img class="lb-img" id="lbImg" src="" alt="">
+    <div class="lb-caption">
+      <span id="lbCounter"></span>
+      <span class="lb-heart">💕</span>
+    </div>
+  </div>
+</div>
+
+<script>
+const photos = [
+  {% set pl = [] %}
+  {% for img in images %}{% if not img.endswith('.mp4') %}{% set _ = pl.append(img) %}{% endif %}{% endfor %}
+  {% for photo in pl %}"{{ url_for('serve_photo', filename=photo) }}"{% if not loop.last %},{% endif %}{% endfor %}
+];
+
+let lbIdx = 0;
+function openLightbox(idx) {
+  lbIdx = idx; updateLb();
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function updateLb() {
+  const img = document.getElementById('lbImg');
+  img.style.opacity = 0; img.src = photos[lbIdx];
+  img.onload = () => { img.style.transition = 'opacity .3s'; img.style.opacity = 1; };
+  document.getElementById('lbCounter').textContent = '📸 ' + (lbIdx + 1) + ' / ' + photos.length;
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function closeLightboxOnBg(e) {
+  if (e.target === document.getElementById('lightbox')) closeLightbox();
+}
+function nextPhoto(e) { e.stopPropagation(); lbIdx = (lbIdx + 1) % photos.length; updateLb(); }
+function prevPhoto(e) { e.stopPropagation(); lbIdx = (lbIdx - 1 + photos.length) % photos.length; updateLb(); }
+document.addEventListener('keydown', e => {
+  if (!document.getElementById('lightbox').classList.contains('open')) return;
+  if (e.key === 'ArrowRight') nextPhoto(e);
+  if (e.key === 'ArrowLeft') prevPhoto(e);
+  if (e.key === 'Escape') closeLightbox();
+});
+</script>
+</body>
+</html>
