@@ -341,6 +341,75 @@ body {
     animation: lineReveal .8s 4.2s ease forwards;
     transition: transform .2s;
 }
+/* ═══════════════════════════════════════
+   PHOTOS BUTTON
+═══════════════════════════════════════ */
+
+.photos-btn {
+
+    display: inline-block;
+
+    margin-top: 16px;
+
+    padding: 13px 30px;
+
+    color: white;
+
+    text-decoration: none;
+
+    font-family:
+        'Cormorant Garamond',
+        serif;
+
+    font-size: 19px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff6b9d,
+            #c44cff
+        );
+
+    border:
+        1px solid
+        rgba(255,255,255,0.45);
+
+    border-radius: 30px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(255,105,160,0.35);
+
+    transition:
+        all 0.3s ease;
+
+}
+
+
+.photos-btn:hover {
+
+    transform:
+        translateY(-4px)
+        scale(1.04);
+
+    box-shadow:
+        0 12px 35px
+        rgba(255,105,160,0.6);
+
+}
+
+
+.photos-btn:active {
+
+    transform:
+        translateY(0)
+        scale(0.98);
+
+}
 
 .restart-btn:hover {
     transform: scale(1.05);
